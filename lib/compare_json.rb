@@ -19,17 +19,29 @@ class CompareJson
         File.file?(file_path) ? true : false
     end
     
+    #def validate_input_file_paths(file_path)
+    #    if !is_a_valid_file_path?(file_path)
+    #        puts "'#{file_path}' is not a valid file or does not exist"
+    #        exit(-1)
+    #    end     
+    #end
+
+    #def validate_json(file, complete_path)
+    #    if !is_valid_json?(file)
+    #        puts "'#{complete_path}' is not a valid JSON"
+    #        exit(-1)
+    #    end
+    #end
+
     def validate_input_file_paths(file_path)
         if !is_a_valid_file_path?(file_path)
-            puts "'#{file_path}' is not a valid file or does not exist"
-            exit(-1)
+            "'#{file_path}' is not a valid file or does not exist"
         end     
     end
 
     def validate_json(file, complete_path)
         if !is_valid_json?(file)
-            puts "'#{complete_path}' is not a valid JSON"
-            exit(-1)
+            "'#{complete_path}' is not a valid JSON"
         end
     end
 
@@ -43,15 +55,65 @@ class CompareJson
         @json_2 = File.read(@json_path_2)
     end
 
+    def validate_paths
+    #    validation_messages = []
+    #    if !is_a_valid_file_path?(@json_path_1)
+    #        validation_messages << "'#{@json_path_1}' is not a valid file or does not exist"
+    #    end
+
+    #    if !is_a_valid_file_path?(@json_path_2)
+    #        validation_messages << "'#{@json_path_2}' is not a valid file or does not exist"
+    #    end
+
+    #    validation_messages
+
+        validation_path_messages = []
+        validate_json_path_1_message = validate_input_file_paths @json_path_1
+        validate_json_path_2_message = validate_input_file_paths @json_path_2
+        validate_json_path_1_message.nil? ? nil : validation_path_messages << validate_json_path_1_message
+        validate_json_path_2_message.nil? ? nil : validation_path_messages << validate_json_path_2_message
+        validation_path_messages
+    end
+
+    def validate_jsons
+        validation_json_messages = []
+        validate_json_1_message = validate_json @json_1, @json_path_1
+        validate_json_2_message = validate_json @json_2, @json_path_2
+        validate_json_1_message.nil? ? nil : validation_json_messages << validate_json_1_message
+        validate_json_2_message.nil? ? nil : validation_json_messages << validate_json_2_message
+        validation_json_messages
+    end
+
+
     #TODO: Acumulate validations and show result once not inside the methods
     def validate
         load_paths
-        validate_input_file_paths @json_path_1
-        validate_input_file_paths @json_path_2
-
+        validation_path_messages = validate_paths
+        #validation_path_messages = validate_paths
+        #if validation_path_messages.length > 0
+        #    puts "Please fix the file paths argument. See details below:\n#{validation_path_messages.join("\n")}"
+        #    exit(-1)
+        #end
+        #validate_json_path_1_message = validate_input_file_paths @json_path_1
+        #validate_json_path_2_message = validate_input_file_paths @json_path_2
+        #validate_json_path_1_message.nil? ? nil : validation_path_messages << validate_json_path_1_message
+        #validate_json_path_2_message.nil? ? nil : validation_path_messages << validate_json_path_2_message
+        if validation_path_messages.length > 0
+            puts "Please fix the file paths argument. See details below:\n#{validation_path_messages.join("\n")}"
+            exit(-1)
+        end
+            
         load_files
-        validate_json @json_1, @json_path_1
-        validate_json @json_2, @json_path_2
+        validation_json_messages = validate_jsons
+        #validate_json_1_message = validate_json @json_1, @json_path_1
+        #validate_json_2_message = validate_json @json_2, @json_path_2
+        #validate_json_1_message.nil? ? nil : validation_json_messages << validate_json_1_message
+        #validate_json_2_message.nil? ? nil : validation_json_messages << validate_json_2_message
+        
+        if validation_json_messages.length > 0
+            puts "Some of the json files are not a valid JSON. See details below:\n#{validation_json_messages.join("\n")}"
+            exit(-1)
+        end
     end
 
     def calculate_distance
