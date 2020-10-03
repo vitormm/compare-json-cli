@@ -15,8 +15,12 @@ class CompareJson
         return false
     end
 
+    def is_a_valid_file_path?(file_path)
+        File.file?(file_path) ? true : false
+    end
+    
     def validate_input_file_paths(file_path)
-        if !File.file?(file_path)
+        if !is_a_valid_file_path?(file_path)
             puts "'#{file_path}' is not a valid file or does not exist"
             exit(-1)
         end     
@@ -44,7 +48,7 @@ class CompareJson
         load_paths
         validate_input_file_paths @json_path_1
         validate_input_file_paths @json_path_2
-        
+
         load_files
         validate_json @json_1, @json_path_1
         validate_json @json_2, @json_path_2
