@@ -1,7 +1,6 @@
 require 'optparse'
 
 class ValidateInput
-
     def check_input
         options = {}
         OptionParser.new do |opts|
@@ -15,9 +14,6 @@ class ValidateInput
                 puts opts
                 exit(-1)
             end
-            
         end.parse!
-
     end
-
 end
